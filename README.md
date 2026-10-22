@@ -10,6 +10,10 @@ The design rationale, routing tables and traffic flows are in [`ARCHITECTURE.md`
 
 ## What it builds
 
+![Cloud WAN with regional ZTGW inspection: segment VPCs attach to prod and dev segments, an inspection NFG in each region sends traffic to GWLB (ZTGW) endpoints, and the ZTGW forwards it to the Zero Trust Exchange](docs/images/cloudwan-ztgw-architecture.jpg)
+
+The same layout in text:
+
 ```
                  Cloud WAN core network (global)
    ┌───────────── edge us-east-1 ─────────────┐  ┌───────────── edge us-west-2 ─────────────┐
