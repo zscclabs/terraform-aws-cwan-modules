@@ -1,7 +1,7 @@
 locals {
   segment_names = sort(keys(var.segments))
 
-  # Resource names: <prefix>-<type>-<context>[-<qualifier>]-<suffix>, e.g. bz-vpc-use1-prod-k3x9.
+  # Resource names: <prefix>-<type>-<context>[-<qualifier>]-<suffix>, e.g. ztc-vpc-use1-prod-k3x9.
   name_suffix = random_string.suffix.result
   # Short region code for names: us-east-1 => use1, eu-west-2 => euw2.
   region_codes = {

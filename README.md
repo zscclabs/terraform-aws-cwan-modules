@@ -76,7 +76,7 @@ terraform apply
 | `test_instance_type` | `t3.micro` | Test instance size |
 | `test_instance_eice_regions` | `null` (all) | Regions that get an EC2 Instance Connect Endpoint (limit: 5 per region) |
 | `zscaler_provision_key` | `null` (sensitive) | Agent provision key for test-instance user data |
-| `name_prefix` / `name_suffix_length` | `bz` / `4` | Resource naming: `<prefix>-<type>-<region>-<vpc>[-<qualifier>]-<suffix>` |
+| `name_prefix` / `name_suffix_length` | `ztc` / `4` | Resource naming: `<prefix>-<type>-<region>-<vpc>[-<qualifier>]-<suffix>` |
 
 Validation checks:
 - each region's ASN is in `64512–64555`

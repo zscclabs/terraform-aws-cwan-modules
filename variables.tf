@@ -13,7 +13,7 @@ variable "home_region" {
 variable "name_prefix" {
   description = "Prefix for every resource name: <prefix>-<type>-<context>-<random suffix>"
   type        = string
-  default     = "bz"
+  default     = "ztc"
 
   validation {
     condition     = can(regex("^[a-z0-9][a-z0-9-]{0,15}$", var.name_prefix))

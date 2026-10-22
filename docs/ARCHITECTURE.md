@@ -24,7 +24,7 @@ The routing view below shows the same design in terms of segments, the NFG and a
 
 ```mermaid
 flowchart LR
-  subgraph CWAN["Cloud WAN core network bz-corenetwork-k3x9 (global)"]
+  subgraph CWAN["Cloud WAN core network ztc-corenetwork-k3x9 (global)"]
     direction TB
     subgraph E1["Edge us-east-1 · ASN 64512"]
       P1[prod segment<br/>isolated]
@@ -38,12 +38,12 @@ flowchart LR
     end
   end
 
-  VP1["bz-vpc-use1-prod<br/>172.16.0.0/24<br/>+ R53 outbound EP"] --- P1
-  VD1["bz-vpc-use1-dev<br/>172.16.10.0/24<br/>+ R53 outbound EP"] --- D1
-  VI1["bz-vpc-use1-inspection<br/>172.16.20.0/24"] --- N1
-  VP2["bz-vpc-usw2-prod<br/>172.16.1.0/24<br/>+ R53 outbound EP"] --- P2
-  VD2["bz-vpc-usw2-dev<br/>172.16.11.0/24<br/>+ R53 outbound EP"] --- D2
-  VI2["bz-vpc-usw2-inspection<br/>172.16.21.0/24"] --- N2
+  VP1["ztc-vpc-use1-prod<br/>172.16.0.0/24<br/>+ R53 outbound EP"] --- P1
+  VD1["ztc-vpc-use1-dev<br/>172.16.10.0/24<br/>+ R53 outbound EP"] --- D1
+  VI1["ztc-vpc-use1-inspection<br/>172.16.20.0/24"] --- N1
+  VP2["ztc-vpc-usw2-prod<br/>172.16.1.0/24<br/>+ R53 outbound EP"] --- P2
+  VD2["ztc-vpc-usw2-dev<br/>172.16.11.0/24<br/>+ R53 outbound EP"] --- D2
+  VI2["ztc-vpc-usw2-inspection<br/>172.16.21.0/24"] --- N2
 
   P1 & D1 -. send-via / send-to .-> N1
   P2 & D2 -. send-via / send-to .-> N2
@@ -56,8 +56,8 @@ flowchart LR
 
 | Component | Value |
 |---|---|
-| Global network | `bz-globalnetwork-k3x9` · `global-network-0example000000001` |
-| Core network | `bz-corenetwork-k3x9` · `core-network-0example000000001` |
+| Global network | `ztc-globalnetwork-k3x9` · `global-network-0example000000001` |
+| Core network | `ztc-corenetwork-k3x9` · `core-network-0example000000001` |
 | Core network ASN range | `64512-64555` |
 | Edge locations | `us-east-1` (ASN 64512), `us-west-2` (ASN 64513) |
 | Segments | `prod` and `dev`, both with `isolate-attachments = true` |
@@ -105,13 +105,13 @@ Every nameable resource is named `<name_prefix>-<type>-<context>[-<qualifier>]-<
 
 | Part | Source | Example |
 |---|---|---|
-| `name_prefix` | variable, default `bz` (lowercase, 1–16 characters) | `bz` |
+| `name_prefix` | variable, default `ztc` (lowercase, 1–16 characters) | `ztc` |
 | `type` | resource type | `vpc`, `subnet`, `rtb`, `vpce`, `attachment`, `sg`, `sgr`, `eice`, `ec2`, `r53ep`, `r53rule`, `r53assoc`, `globalnetwork`, `corenetwork` |
 | `context` | region code + VPC name, built in `locals.tf` (`us-east-1` → `use1`, `us-west-2` → `usw2`) | `use1-prod`, `usw2-inspection` |
 | `qualifier` | a role, an AZ letter, or both | `attach-a`, `gwlbe-b`, `workload`, `resolver-b`, `instance`, `eice`, `r53ep`, `corp` |
 | `suffix` | `random_string.suffix`, length `name_suffix_length` (default 4, range 3–8) | `k3x9` |
 
-Examples: `bz-vpc-use1-prod-k3x9`, `bz-subnet-usw2-inspection-gwlbe-a-k3x9`, `bz-r53rule-use1-dev-corp-k3x9`.
+Examples: `ztc-vpc-use1-prod-k3x9`, `ztc-subnet-usw2-inspection-gwlbe-a-k3x9`, `ztc-r53rule-use1-dev-corp-k3x9`.
 
 Notes:
 - **Stability.** The suffix stays fixed once it's in state. It's there so that several deployments can coexist in one account.
@@ -252,12 +252,12 @@ Every region has one VPC per segment plus one inspection VPC. Each VPC `/24` is 
 
 | VPC | VPC ID | Attachment | Attachment ID | Membership | Appliance mode |
 |---|---|---|---|---|---|
-| `bz-vpc-use1-prod-k3x9` | `vpc-0example000000001` | `bz-attachment-use1-prod-k3x9` | `attachment-0example000000003` | segment `prod` | off |
-| `bz-vpc-use1-dev-k3x9` | `vpc-0example000000002` | `bz-attachment-use1-dev-k3x9` | `attachment-0example000000004` | segment `dev` | off |
-| `bz-vpc-use1-inspection-k3x9` | `vpc-0example000000003` | `bz-attachment-use1-inspection-k3x9` | `attachment-0example000000001` | NFG `inspection` | **on** |
-| `bz-vpc-usw2-prod-k3x9` | `vpc-0example000000004` | `bz-attachment-usw2-prod-k3x9` | `attachment-0example000000005` | segment `prod` | off |
-| `bz-vpc-usw2-dev-k3x9` | `vpc-0example000000005` | `bz-attachment-usw2-dev-k3x9` | `attachment-0example000000006` | segment `dev` | off |
-| `bz-vpc-usw2-inspection-k3x9` | `vpc-0example000000006` | `bz-attachment-usw2-inspection-k3x9` | `attachment-0example000000002` | NFG `inspection` | **on** |
+| `ztc-vpc-use1-prod-k3x9` | `vpc-0example000000001` | `ztc-attachment-use1-prod-k3x9` | `attachment-0example000000003` | segment `prod` | off |
+| `ztc-vpc-use1-dev-k3x9` | `vpc-0example000000002` | `ztc-attachment-use1-dev-k3x9` | `attachment-0example000000004` | segment `dev` | off |
+| `ztc-vpc-use1-inspection-k3x9` | `vpc-0example000000003` | `ztc-attachment-use1-inspection-k3x9` | `attachment-0example000000001` | NFG `inspection` | **on** |
+| `ztc-vpc-usw2-prod-k3x9` | `vpc-0example000000004` | `ztc-attachment-usw2-prod-k3x9` | `attachment-0example000000005` | segment `prod` | off |
+| `ztc-vpc-usw2-dev-k3x9` | `vpc-0example000000005` | `ztc-attachment-usw2-dev-k3x9` | `attachment-0example000000006` | segment `dev` | off |
+| `ztc-vpc-usw2-inspection-k3x9` | `vpc-0example000000006` | `ztc-attachment-usw2-inspection-k3x9` | `attachment-0example000000002` | NFG `inspection` | **on** |
 
 - **State.** All attachments are `AVAILABLE`. Creating or deleting one takes 10–15 minutes, so the Terraform timeouts are 45 minutes.
 - **Appliance mode** pins both directions of a flow to the same AZ inside the inspection VPC. GWLB needs that symmetry, because each AZ's appliance only knows its own flows.
@@ -267,34 +267,34 @@ Every region has one VPC per segment plus one inspection VPC. Each VPC `/24` is 
 
 | Subnet | CIDR | AZ · zone ID | Subnet ID |
 |---|---|---|---|
-| `bz-subnet-use1-prod-attach-b-k3x9` | `172.16.0.0/26` | us-east-1b · use1-az1 | `subnet-0example000000001` |
-| `bz-subnet-use1-prod-attach-c-k3x9` | `172.16.0.64/26` | us-east-1c · use1-az2 | `subnet-0example000000002` |
-| `bz-subnet-use1-prod-workload-k3x9` | `172.16.0.128/26` | us-east-1b · use1-az1 | `subnet-0example000000003` |
-| `bz-subnet-use1-prod-resolver-b-k3x9` | `172.16.0.192/27` | us-east-1b · use1-az1 | `subnet-0example000000004` |
-| `bz-subnet-use1-prod-resolver-c-k3x9` | `172.16.0.224/27` | us-east-1c · use1-az2 | `subnet-0example000000005` |
-| `bz-subnet-use1-dev-attach-b-k3x9` | `172.16.10.0/26` | us-east-1b · use1-az1 | `subnet-0example000000006` |
-| `bz-subnet-use1-dev-attach-c-k3x9` | `172.16.10.64/26` | us-east-1c · use1-az2 | `subnet-0example000000007` |
-| `bz-subnet-use1-dev-workload-k3x9` | `172.16.10.128/26` | us-east-1b · use1-az1 | `subnet-0example000000008` |
-| `bz-subnet-use1-dev-resolver-b-k3x9` | `172.16.10.192/27` | us-east-1b · use1-az1 | `subnet-0example000000009` |
-| `bz-subnet-use1-dev-resolver-c-k3x9` | `172.16.10.224/27` | us-east-1c · use1-az2 | `subnet-0example000000010` |
-| `bz-subnet-use1-inspection-attach-b-k3x9` | `172.16.20.0/26` | us-east-1b · use1-az1 | `subnet-0example000000011` |
-| `bz-subnet-use1-inspection-attach-c-k3x9` | `172.16.20.64/26` | us-east-1c · use1-az2 | `subnet-0example000000012` |
-| `bz-subnet-use1-inspection-gwlbe-b-k3x9` | `172.16.20.128/26` | us-east-1b · use1-az1 | `subnet-0example000000013` |
-| `bz-subnet-use1-inspection-gwlbe-c-k3x9` | `172.16.20.192/26` | us-east-1c · use1-az2 | `subnet-0example000000014` |
-| `bz-subnet-usw2-prod-attach-a-k3x9` | `172.16.1.0/26` | us-west-2a · usw2-az2 | `subnet-0example000000015` |
-| `bz-subnet-usw2-prod-attach-b-k3x9` | `172.16.1.64/26` | us-west-2b · usw2-az1 | `subnet-0example000000016` |
-| `bz-subnet-usw2-prod-workload-k3x9` | `172.16.1.128/26` | us-west-2a · usw2-az2 | `subnet-0example000000017` |
-| `bz-subnet-usw2-prod-resolver-a-k3x9` | `172.16.1.192/27` | us-west-2a · usw2-az2 | `subnet-0example000000018` |
-| `bz-subnet-usw2-prod-resolver-b-k3x9` | `172.16.1.224/27` | us-west-2b · usw2-az1 | `subnet-0example000000019` |
-| `bz-subnet-usw2-dev-attach-a-k3x9` | `172.16.11.0/26` | us-west-2a · usw2-az2 | `subnet-0example000000020` |
-| `bz-subnet-usw2-dev-attach-b-k3x9` | `172.16.11.64/26` | us-west-2b · usw2-az1 | `subnet-0example000000021` |
-| `bz-subnet-usw2-dev-workload-k3x9` | `172.16.11.128/26` | us-west-2a · usw2-az2 | `subnet-0example000000022` |
-| `bz-subnet-usw2-dev-resolver-a-k3x9` | `172.16.11.192/27` | us-west-2a · usw2-az2 | `subnet-0example000000023` |
-| `bz-subnet-usw2-dev-resolver-b-k3x9` | `172.16.11.224/27` | us-west-2b · usw2-az1 | `subnet-0example000000024` |
-| `bz-subnet-usw2-inspection-attach-a-k3x9` | `172.16.21.0/26` | us-west-2a · usw2-az2 | `subnet-0example000000025` |
-| `bz-subnet-usw2-inspection-attach-b-k3x9` | `172.16.21.64/26` | us-west-2b · usw2-az1 | `subnet-0example000000026` |
-| `bz-subnet-usw2-inspection-gwlbe-a-k3x9` | `172.16.21.128/26` | us-west-2a · usw2-az2 | `subnet-0example000000027` |
-| `bz-subnet-usw2-inspection-gwlbe-b-k3x9` | `172.16.21.192/26` | us-west-2b · usw2-az1 | `subnet-0example000000028` |
+| `ztc-subnet-use1-prod-attach-b-k3x9` | `172.16.0.0/26` | us-east-1b · use1-az1 | `subnet-0example000000001` |
+| `ztc-subnet-use1-prod-attach-c-k3x9` | `172.16.0.64/26` | us-east-1c · use1-az2 | `subnet-0example000000002` |
+| `ztc-subnet-use1-prod-workload-k3x9` | `172.16.0.128/26` | us-east-1b · use1-az1 | `subnet-0example000000003` |
+| `ztc-subnet-use1-prod-resolver-b-k3x9` | `172.16.0.192/27` | us-east-1b · use1-az1 | `subnet-0example000000004` |
+| `ztc-subnet-use1-prod-resolver-c-k3x9` | `172.16.0.224/27` | us-east-1c · use1-az2 | `subnet-0example000000005` |
+| `ztc-subnet-use1-dev-attach-b-k3x9` | `172.16.10.0/26` | us-east-1b · use1-az1 | `subnet-0example000000006` |
+| `ztc-subnet-use1-dev-attach-c-k3x9` | `172.16.10.64/26` | us-east-1c · use1-az2 | `subnet-0example000000007` |
+| `ztc-subnet-use1-dev-workload-k3x9` | `172.16.10.128/26` | us-east-1b · use1-az1 | `subnet-0example000000008` |
+| `ztc-subnet-use1-dev-resolver-b-k3x9` | `172.16.10.192/27` | us-east-1b · use1-az1 | `subnet-0example000000009` |
+| `ztc-subnet-use1-dev-resolver-c-k3x9` | `172.16.10.224/27` | us-east-1c · use1-az2 | `subnet-0example000000010` |
+| `ztc-subnet-use1-inspection-attach-b-k3x9` | `172.16.20.0/26` | us-east-1b · use1-az1 | `subnet-0example000000011` |
+| `ztc-subnet-use1-inspection-attach-c-k3x9` | `172.16.20.64/26` | us-east-1c · use1-az2 | `subnet-0example000000012` |
+| `ztc-subnet-use1-inspection-gwlbe-b-k3x9` | `172.16.20.128/26` | us-east-1b · use1-az1 | `subnet-0example000000013` |
+| `ztc-subnet-use1-inspection-gwlbe-c-k3x9` | `172.16.20.192/26` | us-east-1c · use1-az2 | `subnet-0example000000014` |
+| `ztc-subnet-usw2-prod-attach-a-k3x9` | `172.16.1.0/26` | us-west-2a · usw2-az2 | `subnet-0example000000015` |
+| `ztc-subnet-usw2-prod-attach-b-k3x9` | `172.16.1.64/26` | us-west-2b · usw2-az1 | `subnet-0example000000016` |
+| `ztc-subnet-usw2-prod-workload-k3x9` | `172.16.1.128/26` | us-west-2a · usw2-az2 | `subnet-0example000000017` |
+| `ztc-subnet-usw2-prod-resolver-a-k3x9` | `172.16.1.192/27` | us-west-2a · usw2-az2 | `subnet-0example000000018` |
+| `ztc-subnet-usw2-prod-resolver-b-k3x9` | `172.16.1.224/27` | us-west-2b · usw2-az1 | `subnet-0example000000019` |
+| `ztc-subnet-usw2-dev-attach-a-k3x9` | `172.16.11.0/26` | us-west-2a · usw2-az2 | `subnet-0example000000020` |
+| `ztc-subnet-usw2-dev-attach-b-k3x9` | `172.16.11.64/26` | us-west-2b · usw2-az1 | `subnet-0example000000021` |
+| `ztc-subnet-usw2-dev-workload-k3x9` | `172.16.11.128/26` | us-west-2a · usw2-az2 | `subnet-0example000000022` |
+| `ztc-subnet-usw2-dev-resolver-a-k3x9` | `172.16.11.192/27` | us-west-2a · usw2-az2 | `subnet-0example000000023` |
+| `ztc-subnet-usw2-dev-resolver-b-k3x9` | `172.16.11.224/27` | us-west-2b · usw2-az1 | `subnet-0example000000024` |
+| `ztc-subnet-usw2-inspection-attach-a-k3x9` | `172.16.21.0/26` | us-west-2a · usw2-az2 | `subnet-0example000000025` |
+| `ztc-subnet-usw2-inspection-attach-b-k3x9` | `172.16.21.64/26` | us-west-2b · usw2-az1 | `subnet-0example000000026` |
+| `ztc-subnet-usw2-inspection-gwlbe-a-k3x9` | `172.16.21.128/26` | us-west-2a · usw2-az2 | `subnet-0example000000027` |
+| `ztc-subnet-usw2-inspection-gwlbe-b-k3x9` | `172.16.21.192/26` | us-west-2b · usw2-az1 | `subnet-0example000000028` |
 
 ### 6.3 Availability-zone pinning
 
@@ -315,8 +315,8 @@ Every region has one VPC per segment plus one inspection VPC. Each VPC `/24` is 
 
 | Region | Endpoint service | Provider account | Offered zones | Endpoints |
 |---|---|---|---|---|
-| us-east-1 | `com.amazonaws.vpce.us-east-1.vpce-svc-0example000000002` | `444455556666` | use1-az1, use1-az2 | `bz-vpce-use1-inspection-b-k3x9` (`vpce-0example000000001`), `bz-vpce-use1-inspection-c-k3x9` (`vpce-0example000000002`) |
-| us-west-2 | `com.amazonaws.vpce.us-west-2.vpce-svc-0example000000003` | `777788889999` | usw2-az2, usw2-az1 | `bz-vpce-usw2-inspection-a-k3x9` (`vpce-0example000000003`), `bz-vpce-usw2-inspection-b-k3x9` (`vpce-0example000000004`) |
+| us-east-1 | `com.amazonaws.vpce.us-east-1.vpce-svc-0example000000002` | `444455556666` | use1-az1, use1-az2 | `ztc-vpce-use1-inspection-b-k3x9` (`vpce-0example000000001`), `ztc-vpce-use1-inspection-c-k3x9` (`vpce-0example000000002`) |
+| us-west-2 | `com.amazonaws.vpce.us-west-2.vpce-svc-0example000000003` | `777788889999` | usw2-az2, usw2-az1 | `ztc-vpce-usw2-inspection-a-k3x9` (`vpce-0example000000003`), `ztc-vpce-usw2-inspection-b-k3x9` (`vpce-0example000000004`) |
 
 - **Status.** All endpoints are `available`, and both services accept connections automatically.
 - **Outside this configuration.** The security appliances, their policy, their logging and their internet egress all run in the provider's accounts.
@@ -326,12 +326,12 @@ Every region has one VPC per segment plus one inspection VPC. Each VPC `/24` is 
 
 | Route table | ID | Associated subnets | Routes |
 |---|---|---|---|
-| `bz-rtb-use1-inspection-attach-b-k3x9` | `rtb-0example000000001` | attach-b | `local`; `0.0.0.0/0 → bz-vpce-use1-inspection-b` |
-| `bz-rtb-use1-inspection-attach-c-k3x9` | `rtb-0example000000002` | attach-c | `local`; `0.0.0.0/0 → bz-vpce-use1-inspection-c` |
-| `bz-rtb-use1-inspection-gwlbe-k3x9` | `rtb-0example000000003` | gwlbe-b, gwlbe-c | `local`; `0.0.0.0/0 → core network` |
-| `bz-rtb-usw2-inspection-attach-a-k3x9` | `rtb-0example000000004` | attach-a | `local`; `0.0.0.0/0 → bz-vpce-usw2-inspection-a` |
-| `bz-rtb-usw2-inspection-attach-b-k3x9` | `rtb-0example000000005` | attach-b | `local`; `0.0.0.0/0 → bz-vpce-usw2-inspection-b` |
-| `bz-rtb-usw2-inspection-gwlbe-k3x9` | `rtb-0example000000006` | gwlbe-a, gwlbe-b | `local`; `0.0.0.0/0 → core network` |
+| `ztc-rtb-use1-inspection-attach-b-k3x9` | `rtb-0example000000001` | attach-b | `local`; `0.0.0.0/0 → ztc-vpce-use1-inspection-b` |
+| `ztc-rtb-use1-inspection-attach-c-k3x9` | `rtb-0example000000002` | attach-c | `local`; `0.0.0.0/0 → ztc-vpce-use1-inspection-c` |
+| `ztc-rtb-use1-inspection-gwlbe-k3x9` | `rtb-0example000000003` | gwlbe-b, gwlbe-c | `local`; `0.0.0.0/0 → core network` |
+| `ztc-rtb-usw2-inspection-attach-a-k3x9` | `rtb-0example000000004` | attach-a | `local`; `0.0.0.0/0 → ztc-vpce-usw2-inspection-a` |
+| `ztc-rtb-usw2-inspection-attach-b-k3x9` | `rtb-0example000000005` | attach-b | `local`; `0.0.0.0/0 → ztc-vpce-usw2-inspection-b` |
+| `ztc-rtb-usw2-inspection-gwlbe-k3x9` | `rtb-0example000000006` | gwlbe-a, gwlbe-b | `local`; `0.0.0.0/0 → core network` |
 
 Path through an inspection VPC:
 
@@ -353,10 +353,10 @@ Test instances are enabled (`deploy_test_instances = true`) in every segment VPC
 
 | Route table | ID | Associated subnets | Routes |
 |---|---|---|---|
-| `bz-rtb-use1-prod-workload-k3x9` | `rtb-0example000000007` | workload | `local`; `0.0.0.0/0 → core network` |
-| `bz-rtb-use1-dev-workload-k3x9` | `rtb-0example000000008` | workload | `local`; `0.0.0.0/0 → core network` |
-| `bz-rtb-usw2-prod-workload-k3x9` | `rtb-0example000000009` | workload | `local`; `0.0.0.0/0 → core network` |
-| `bz-rtb-usw2-dev-workload-k3x9` | `rtb-0example000000010` | workload | `local`; `0.0.0.0/0 → core network` |
+| `ztc-rtb-use1-prod-workload-k3x9` | `rtb-0example000000007` | workload | `local`; `0.0.0.0/0 → core network` |
+| `ztc-rtb-use1-dev-workload-k3x9` | `rtb-0example000000008` | workload | `local`; `0.0.0.0/0 → core network` |
+| `ztc-rtb-usw2-prod-workload-k3x9` | `rtb-0example000000009` | workload | `local`; `0.0.0.0/0 → core network` |
+| `ztc-rtb-usw2-dev-workload-k3x9` | `rtb-0example000000010` | workload | `local`; `0.0.0.0/0 → core network` |
 | Main route table (each VPC) | — | attachment subnets | `local` only |
 
 - **Route destination.** With `egress_inspection = false`, the workload route is `172.16.0.0/16 → core network` instead (`cloudwan_destination_cidr`).
@@ -365,10 +365,10 @@ Test instances are enabled (`deploy_test_instances = true`) in every segment VPC
 
 | Instance | ID | Private IP | AZ · zone | Security group | Access |
 |---|---|---|---|---|---|
-| `bz-ec2-use1-prod-k3x9` | `i-0example000000001` | `172.16.0.186` | us-east-1b · use1-az1 | `bz-sg-use1-prod-instance-k3x9` (`sg-0example000000001`) | jump through a us-west-2 instance |
-| `bz-ec2-use1-dev-k3x9` | `i-0example000000002` | `172.16.10.133` | us-east-1b · use1-az1 | `bz-sg-use1-dev-instance-k3x9` (`sg-0example000000002`) | jump through a us-west-2 instance |
-| `bz-ec2-usw2-prod-k3x9` | `i-0example000000003` | `172.16.1.143` | us-west-2a · usw2-az2 | `bz-sg-usw2-prod-instance-k3x9` (`sg-0example000000003`) | EICE `bz-eice-usw2-prod-k3x9` (`eice-0example000000001`) |
-| `bz-ec2-usw2-dev-k3x9` | `i-0example000000004` | `172.16.11.182` | us-west-2a · usw2-az2 | `bz-sg-usw2-dev-instance-k3x9` (`sg-0example000000004`) | EICE `bz-eice-usw2-dev-k3x9` (`eice-0example000000002`) |
+| `ztc-ec2-use1-prod-k3x9` | `i-0example000000001` | `172.16.0.186` | us-east-1b · use1-az1 | `ztc-sg-use1-prod-instance-k3x9` (`sg-0example000000001`) | jump through a us-west-2 instance |
+| `ztc-ec2-use1-dev-k3x9` | `i-0example000000002` | `172.16.10.133` | us-east-1b · use1-az1 | `ztc-sg-use1-dev-instance-k3x9` (`sg-0example000000002`) | jump through a us-west-2 instance |
+| `ztc-ec2-usw2-prod-k3x9` | `i-0example000000003` | `172.16.1.143` | us-west-2a · usw2-az2 | `ztc-sg-usw2-prod-instance-k3x9` (`sg-0example000000003`) | EICE `ztc-eice-usw2-prod-k3x9` (`eice-0example000000001`) |
+| `ztc-ec2-usw2-dev-k3x9` | `i-0example000000004` | `172.16.11.182` | us-west-2a · usw2-az2 | `ztc-sg-usw2-dev-instance-k3x9` (`sg-0example000000004`) | EICE `ztc-eice-usw2-dev-k3x9` (`eice-0example000000002`) |
 
 **Instance build:**
 - `t3.micro` running Amazon Linux 2023. The AMI comes from the SSM public parameter, and later AMI changes are ignored.
@@ -381,7 +381,7 @@ Test instances are enabled (`deploy_test_instances = true`) in every segment VPC
 **EICE placement:**
 - EC2 Instance Connect Endpoints are limited to 5 per account per region.
 - `test_instance_eice_regions` limits them to selected regions, `["us-west-2"]` in the examples. Instances in other regions are reached by jumping through an instance that has one.
-- In regions without an EICE, the `bz-sg-<ctx>-eice` groups exist but are unused.
+- In regions without an EICE, the `ztc-sg-<ctx>-eice` groups exist but are unused.
 
 ### 8.2 DNS conditional forwarding (`dns_forwarding`)
 
@@ -401,20 +401,20 @@ dns_forwarding = {
 
 | VPC | Endpoint | Endpoint IPs | Resolver route table | Endpoint SG | FORWARD rule | Association |
 |---|---|---|---|---|---|---|
-| use1 prod | `bz-r53ep-use1-prod-k3x9` (`rslvr-out-0example000000001`) | 172.16.0.200, 172.16.0.244 | `rtb-0example000000011` | `sg-0example000000005` | `rslvr-rr-0example000000001` | `rslvr-rrassoc-0example000000001` |
-| use1 dev | `bz-r53ep-use1-dev-k3x9` (`rslvr-out-0example000000002`) | 172.16.10.207, 172.16.10.233 | `rtb-0example000000012` | `sg-0example000000006` | `rslvr-rr-0example000000002` | `rslvr-rrassoc-0example000000002` |
-| usw2 prod | `bz-r53ep-usw2-prod-k3x9` (`rslvr-out-0example000000003`) | 172.16.1.219, 172.16.1.244 | `rtb-0example000000013` | `sg-0example000000007` | `rslvr-rr-0example000000003` | `rslvr-rrassoc-0example000000003` |
-| usw2 dev | `bz-r53ep-usw2-dev-k3x9` (`rslvr-out-0example000000004`) | 172.16.11.207, 172.16.11.239 | `rtb-0example000000014` | `sg-0example000000008` | `rslvr-rr-0example000000004` | `rslvr-rrassoc-0example000000004` |
+| use1 prod | `ztc-r53ep-use1-prod-k3x9` (`rslvr-out-0example000000001`) | 172.16.0.200, 172.16.0.244 | `rtb-0example000000011` | `sg-0example000000005` | `rslvr-rr-0example000000001` | `rslvr-rrassoc-0example000000001` |
+| use1 dev | `ztc-r53ep-use1-dev-k3x9` (`rslvr-out-0example000000002`) | 172.16.10.207, 172.16.10.233 | `rtb-0example000000012` | `sg-0example000000006` | `rslvr-rr-0example000000002` | `rslvr-rrassoc-0example000000002` |
+| usw2 prod | `ztc-r53ep-usw2-prod-k3x9` (`rslvr-out-0example000000003`) | 172.16.1.219, 172.16.1.244 | `rtb-0example000000013` | `sg-0example000000007` | `rslvr-rr-0example000000003` | `rslvr-rrassoc-0example000000003` |
+| usw2 dev | `ztc-r53ep-usw2-dev-k3x9` (`rslvr-out-0example000000004`) | 172.16.11.207, 172.16.11.239 | `rtb-0example000000014` | `sg-0example000000008` | `rslvr-rr-0example000000004` | `rslvr-rrassoc-0example000000004` |
 
 **Components in each VPC:**
 
 | Component | Detail |
 |---|---|
-| Resolver subnets | `bz-subnet-<ctx>-resolver-<az>-k3x9`: `.192/27` and `.224/27`, in the two attachment-subnet AZs |
-| Route table | `bz-rtb-<ctx>-resolver-k3x9`: `local`; `0.0.0.0/0 → core network`. The route waits for the VPC attachment. |
-| Endpoint | `bz-r53ep-<ctx>-k3x9`: OUTBOUND, protocol Do53, one IP per resolver subnet (2 AZs) |
-| Security group | `bz-sg-<ctx>-r53ep-k3x9`: egress udp/53 and tcp/53 to each target `/32` only. No ingress, since an outbound endpoint receives nothing. |
-| Rules | FORWARD `bz-r53rule-<ctx>-<key>-k3x9` sends `domain_names` → `target_ips:53`. SYSTEM `bz-r53rule-<ctx>-sys-<key>-k3x9` makes AWS resolve `system_domains` itself. Each rule is associated with its own VPC (`bz-r53assoc-…`). |
+| Resolver subnets | `ztc-subnet-<ctx>-resolver-<az>-k3x9`: `.192/27` and `.224/27`, in the two attachment-subnet AZs |
+| Route table | `ztc-rtb-<ctx>-resolver-k3x9`: `local`; `0.0.0.0/0 → core network`. The route waits for the VPC attachment. |
+| Endpoint | `ztc-r53ep-<ctx>-k3x9`: OUTBOUND, protocol Do53, one IP per resolver subnet (2 AZs) |
+| Security group | `ztc-sg-<ctx>-r53ep-k3x9`: egress udp/53 and tcp/53 to each target `/32` only. No ingress, since an outbound endpoint receives nothing. |
+| Rules | FORWARD `ztc-r53rule-<ctx>-<key>-k3x9` sends `domain_names` → `target_ips:53`. SYSTEM `ztc-r53rule-<ctx>-sys-<key>-k3x9` makes AWS resolve `system_domains` itself. Each rule is associated with its own VPC (`ztc-r53assoc-…`). |
 
 **Query path:**
 
@@ -485,7 +485,7 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-  participant W as bz-ec2-use1-prod
+  participant W as ztc-ec2-use1-prod
   participant C as Cloud WAN edge us-east-1
   participant A as Inspection attachment (AZ x)
   participant E as GWLBe (AZ x)
@@ -532,11 +532,11 @@ Both directions cross the **same** appliance, in the same AZ.
 
 | Security group | Rule (Name tag) | Direction | Protocol / port | Peer |
 |---|---|---|---|---|
-| `bz-sg-<ctx>-instance-k3x9` | `bz-sgr-<ctx>-ssh-from-eice-k3x9` | Ingress | TCP 22 | EICE security group |
-| | `bz-sgr-<ctx>-from-cloudwan-k3x9` | Ingress | All | `172.16.0.0/16` (all Cloud WAN address space) |
-| | `bz-sgr-<ctx>-all-egress-k3x9` | Egress | All | `0.0.0.0/0` |
-| `bz-sg-<ctx>-eice-k3x9` | `bz-sgr-<ctx>-ssh-to-instance-k3x9` | Egress | TCP 22 | Instance security group |
-| `bz-sg-<ctx>-r53ep-k3x9` | `bz-sgr-<ctx>-dns-{udp,tcp}-<target>-k3x9` | Egress | UDP and TCP 53 | each `target_ip/32` |
+| `ztc-sg-<ctx>-instance-k3x9` | `ztc-sgr-<ctx>-ssh-from-eice-k3x9` | Ingress | TCP 22 | EICE security group |
+| | `ztc-sgr-<ctx>-from-cloudwan-k3x9` | Ingress | All | `172.16.0.0/16` (all Cloud WAN address space) |
+| | `ztc-sgr-<ctx>-all-egress-k3x9` | Egress | All | `0.0.0.0/0` |
+| `ztc-sg-<ctx>-eice-k3x9` | `ztc-sgr-<ctx>-ssh-to-instance-k3x9` | Egress | TCP 22 | Instance security group |
+| `ztc-sg-<ctx>-r53ep-k3x9` | `ztc-sgr-<ctx>-dns-{udp,tcp}-<target>-k3x9` | Egress | UDP and TCP 53 | each `target_ip/32` |
 
 - **Contexts.** `<ctx>` is `use1-prod`, `use1-dev`, `usw2-prod` or `usw2-dev`.
 - **Rules as separate resources.** Rules are separate `aws_vpc_security_group_*_rule` resources. This avoids a reference cycle between the instance and EICE groups.
@@ -603,9 +603,9 @@ The test instances have no public IP, no IGW and no SSM role. SSH goes through a
 
 | Instance | Region | Reached via |
 |---|---|---|
-| `bz-ec2-usw2-prod-k3x9` | us-west-2 | `bz-eice-usw2-prod-k3x9` (`eice-0example000000001`) |
-| `bz-ec2-usw2-dev-k3x9` | us-west-2 | `bz-eice-usw2-dev-k3x9` (`eice-0example000000002`) |
-| `bz-ec2-use1-prod-k3x9`, `bz-ec2-use1-dev-k3x9` | us-east-1 | jump host (either us-west-2 instance), then Cloud WAN |
+| `ztc-ec2-usw2-prod-k3x9` | us-west-2 | `ztc-eice-usw2-prod-k3x9` (`eice-0example000000001`) |
+| `ztc-ec2-usw2-dev-k3x9` | us-west-2 | `ztc-eice-usw2-dev-k3x9` (`eice-0example000000002`) |
+| `ztc-ec2-use1-prod-k3x9`, `ztc-ec2-use1-dev-k3x9` | us-east-1 | jump host (either us-west-2 instance), then Cloud WAN |
 
 #### Prerequisites
 
@@ -615,8 +615,8 @@ The test instances have no public IP, no IGW and no SSM role. SSH goes through a
   - `ec2-instance-connect:SendSSHPublicKey` on the instances.
   - Option A needs only `OpenTunnel`.
 - **Security groups,** created by Terraform in each segment VPC:
-  - `bz-sg-<ctx>-eice` allows egress tcp/22 to `bz-sg-<ctx>-instance`.
-  - `bz-sg-<ctx>-instance` allows ingress tcp/22 from the EICE group.
+  - `ztc-sg-<ctx>-eice` allows egress tcp/22 to `ztc-sg-<ctx>-instance`.
+  - `ztc-sg-<ctx>-instance` allows ingress tcp/22 from the EICE group.
 - **Instance IDs and IPs:** these change whenever the instances are replaced, e.g. after a user-data change. Look them up with `terraform output test_instances`.
 - **OS user:** `ec2-user` (Amazon Linux 2023).
 
@@ -626,9 +626,9 @@ The CLI finds the EICE in the instance's subnet, generates a one-time key, pushe
 
 ```sh
 AWS_PROFILE=<aws-profile> aws ec2-instance-connect ssh --region us-west-2 \
-  --instance-id i-0example000000003 --connection-type eice      # bz-ec2-usw2-prod
+  --instance-id i-0example000000003 --connection-type eice      # ztc-ec2-usw2-prod
 AWS_PROFILE=<aws-profile> aws ec2-instance-connect ssh --region us-west-2 \
-  --instance-id i-0example000000004 --connection-type eice      # bz-ec2-usw2-dev
+  --instance-id i-0example000000004 --connection-type eice      # ztc-ec2-usw2-dev
 ```
 
 Add `--os-user ec2-user` if the CLI asks for a user.
@@ -637,48 +637,48 @@ Add `--os-user ec2-user` if the CLI asks for a user.
 
 1. **Create a key once:**
    ```sh
-   ssh-keygen -t ed25519 -N '' -f ~/.ssh/bz-test
+   ssh-keygen -t ed25519 -N '' -f ~/.ssh/ztc-test
    ```
 2. **Add this to `~/.ssh/config`:**
    ```sshconfig
-   Host bz-usw2-prod
+   Host ztc-usw2-prod
      HostName i-0example000000003
-   Host bz-usw2-dev
+   Host ztc-usw2-dev
      HostName i-0example000000004
-   Host bz-usw2-*
+   Host ztc-usw2-*
      User ec2-user
-     IdentityFile ~/.ssh/bz-test
+     IdentityFile ~/.ssh/ztc-test
      IdentitiesOnly yes
      ProxyCommand env AWS_PROFILE=<aws-profile> aws ec2-instance-connect open-tunnel --region us-west-2 --instance-id %h
 
    # us-east-1 instances: jump through a us-west-2 instance over Cloud WAN (no EICE in us-east-1)
-   Host bz-use1-prod
+   Host ztc-use1-prod
      HostName 172.16.0.186
-   Host bz-use1-dev
+   Host ztc-use1-dev
      HostName 172.16.10.133
-   Host bz-use1-*
+   Host ztc-use1-*
      User ec2-user
-     IdentityFile ~/.ssh/bz-test
+     IdentityFile ~/.ssh/ztc-test
      IdentitiesOnly yes
-     ProxyJump bz-usw2-dev
+     ProxyJump ztc-usw2-dev
    ```
 3. **Push the public key, then connect within 60 seconds.** Instance Connect keys are valid for 60 seconds, so push one before every new connection:
    ```sh
    push() {  # push <region> <instance-id>
      AWS_PROFILE=<aws-profile> aws ec2-instance-connect send-ssh-public-key --region "$1" \
-       --instance-id "$2" --instance-os-user ec2-user --ssh-public-key file://$HOME/.ssh/bz-test.pub
+       --instance-id "$2" --instance-os-user ec2-user --ssh-public-key file://$HOME/.ssh/ztc-test.pub
    }
 
-   push us-west-2 i-0example000000003 && ssh bz-usw2-prod
+   push us-west-2 i-0example000000003 && ssh ztc-usw2-prod
 
    # us-east-1: push to both the jump host and the target, then connect
-   push us-west-2 i-0example000000004 && push us-east-1 i-0example000000001 && ssh bz-use1-prod
+   push us-west-2 i-0example000000004 && push us-east-1 i-0example000000001 && ssh ztc-use1-prod
    ```
 4. **Examples:**
    ```sh
-   push us-west-2 i-0example000000003 && ssh bz-usw2-prod 'ping -c3 172.16.11.182'
-   push us-west-2 i-0example000000003 && scp ./file bz-usw2-prod:/tmp/
-   push us-west-2 i-0example000000003 && ssh -L 8080:localhost:80 bz-usw2-prod   # local port forward
+   push us-west-2 i-0example000000003 && ssh ztc-usw2-prod 'ping -c3 172.16.11.182'
+   push us-west-2 i-0example000000003 && scp ./file ztc-usw2-prod:/tmp/
+   push us-west-2 i-0example000000003 && ssh -L 8080:localhost:80 ztc-usw2-prod   # local port forward
    ```
 
 Once a session is open, it stays open past the 60 seconds. The key window applies only to authentication.

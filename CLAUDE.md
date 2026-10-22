@@ -48,11 +48,11 @@ Everything is driven by three inputs in `variables.tf`:
 
 **Naming.**
 - Every nameable resource is named `<name_prefix>-<type>-<context>[-<qualifier>]-<suffix>`, e.g.:
-  - `bz-vpc-use1-prod-k3x9`
-  - `bz-subnet-use1-inspection-gwlbe-b-k3x9`
-  - `bz-sg-usw2-dev-instance-k3x9`
+  - `ztc-vpc-use1-prod-k3x9`
+  - `ztc-subnet-use1-inspection-gwlbe-b-k3x9`
+  - `ztc-sg-usw2-dev-instance-k3x9`
 - The parts:
-  - `name_prefix` defaults to `bz`.
+  - `name_prefix` defaults to `ztc`.
   - `<suffix>` is one deployment-wide `random_string.suffix`, of length `name_suffix_length` (default 4).
   - `<context>` is `<region code>-<vpc name>`, built in `locals.tf` (`us-east-1` → `use1`).
   - The qualifier is an AZ letter or a role.
