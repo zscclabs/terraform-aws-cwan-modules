@@ -18,6 +18,10 @@ The whole design is deployed with Terraform (≥ 1.9, AWS provider `~> 6.0`) fro
 
 ## 1. Overview
 
+![Cloud WAN with regional ZTGW inspection: segment VPCs attach to prod and dev segments, an inspection NFG in each region sends traffic to GWLB (ZTGW) endpoints, and the ZTGW forwards it to the Zero Trust Exchange](images/cloudwan-ztgw-architecture.jpg)
+
+The routing view below shows the same design in terms of segments, the NFG and attachments. For a rule-by-rule analysis of the core network policy and the routes it installs, see [`CLOUDWAN_POLICY_ANALYSIS.md`](CLOUDWAN_POLICY_ANALYSIS.md).
+
 ```mermaid
 flowchart LR
   subgraph CWAN["Cloud WAN core network bz-corenetwork-k3x9 (global)"]

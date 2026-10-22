@@ -6,7 +6,13 @@ Terraform for a multi-region **AWS Cloud WAN** core network where every flow is 
 - internet egress
 - optionally, conditional DNS forwarding.
 
-The design rationale, routing tables and traffic flows are in [`ARCHITECTURE.md`](ARCHITECTURE.md).
+## Documentation
+
+| Document | Contents |
+|---|---|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Reference architecture: design rationale, naming, VPC and subnet layout, inspection and DNS forwarding, traffic flows, security controls, operations and test procedure |
+| [`docs/CLOUDWAN_POLICY_ANALYSIS.md`](docs/CLOUDWAN_POLICY_ANALYSIS.md) | The Cloud WAN core network policy rule by rule: segments, NFG, attachment policies, segment actions, effective routes, traffic-flow matrix, risks and recommendations |
+| [`CLAUDE.md`](CLAUDE.md) | Contributor notes: module internals, the change procedures and known gaps |
 
 ## What it builds
 
@@ -112,7 +118,7 @@ With `deploy_test_instances = true`, connect through EC2 Instance Connect:
 aws ec2-instance-connect ssh --region <region> --instance-id <id> --connection-type eice
 ```
 
-The test procedure and expected results are in `ARCHITECTURE.md` §12. It covers ICMP and SSH between every pair of instances, plus HTTP(S), ICMP and DNS to the internet. Every pair is inspected, so the appliances must allow the flows you test.
+The test procedure and expected results are in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) §12. It covers ICMP and SSH between every pair of instances, plus HTTP(S), ICMP and DNS to the internet. Every pair is inspected, so the appliances must allow the flows you test.
 
 ## Secrets and private data
 

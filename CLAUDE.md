@@ -71,9 +71,9 @@ Everything is driven by three inputs in `variables.tf`:
 - When `true`, each segment VPC (not the inspection VPCs) gets:
   - a workload subnet (`cidrsubnet(cidr, 2, 2)`) and a route table sending `172.16.0.0/16` to the core network ARN (in `modules/vpc`)
   - a `modules/test_instance`: an AL2023 instance, an EC2 Instance Connect Endpoint and security groups.
-- Connect with `aws ec2-instance-connect ssh --region <r> --instance-id <id> --connection-type eice`. See `ARCHITECTURE.md` §12.1 for native `ssh` (open-tunnel ProxyCommand plus `send-ssh-public-key`, 60 s key window) and ProxyJump to the us-east-1 instances.
+- Connect with `aws ec2-instance-connect ssh --region <r> --instance-id <id> --connection-type eice`. See `docs/ARCHITECTURE.md` §12.1 for native `ssh` (open-tunnel ProxyCommand plus `send-ssh-public-key`, 60 s key window) and ProxyJump to the us-east-1 instances.
 - EICE is limited to 5 per account per region. `test_instance_eice_regions` restricts EICEs to regions with free slots (`["us-west-2"]` in the example). Instances in other regions are tested by jumping through or pinging from an instance that has one.
-- Expected results (see `ARCHITECTURE.md` §12.3):
+- Expected results (see `docs/ARCHITECTURE.md` §12.3):
   - every instance pair passes ICMP and tcp/22, in both directions. Every pair is inspected: same-region pairs locally, cross-region pairs in us-east-1.
   - internet HTTP/HTTPS and ICMP work from all four instances
   - if a pair fails, suspect the appliance policy first. Cross-region flows are inspected only in us-east-1, so its policy must allow us-west-2 sources.
