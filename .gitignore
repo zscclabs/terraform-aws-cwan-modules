@@ -1,0 +1,20 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Real inputs and secrets
+terraform.tfvars
+*.auto.tfvars
+.env
+
+# Private docs and local Claude notes
+private/
+CLAUDE.local.md

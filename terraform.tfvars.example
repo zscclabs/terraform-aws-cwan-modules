@@ -1,0 +1,62 @@
+# Example inputs. Copy to terraform.tfvars (gitignored, auto-loaded by Terraform) and fill in real values.
+# Never commit real values or secrets: terraform.tfvars, *.auto.tfvars and state are gitignored.
+
+# AWS CLI profile to use (null/omitted = default credential chain).
+aws_profile = "<your-profile>"
+
+home_region = "us-east-1"
+
+deploy_test_instances = true
+
+# EC2 Instance Connect Endpoints are limited to 5 per region; restrict them to regions with free slots.
+test_instance_eice_regions = ["us-west-2"]
+
+# Secret: endpoint agent provision key for the test instances' user data.
+# Prefer the environment: export TF_VAR_zscaler_provision_key='...'
+# zscaler_provision_key = "<provision-key>"
+
+# Send 0.0.0.0/0 from every segment through the inspection VPC in its own region (requires
+# gwlb_endpoint_service_name in every region). Also switches prod<->dev inspection to single-hop
+# (Cloud WAN can't mix dual-hop send-via with send-to on one NFG).
+egress_inspection = true
+
+# DNS conditional forwarding (requires egress_inspection): every segment VPC gets a Route 53 Resolver
+# outbound endpoint (2 IPs, 2 new /27 subnets) forwarding domain_names to target_ips through the local
+# inspection VPC. system_domains (SYSTEM rules) only matter under a forwarded parent domain, e.g. ".".
+# Quota: 4 resolver endpoints per account per region by default; this needs 2 per region.
+dns_forwarding = {
+  target_ips   = ["198.51.100.53", "198.51.100.54"]
+  domain_names = { corp = "corp.example.com" }
+}
+
+segments = {
+  prod = "Production Workload Segment"
+  dev  = "Development Workload Segment"
+}
+
+regions = {
+  "us-east-1" = {
+    asn = 64512
+    # The GWLB endpoint service must be offered in the zones below
+    # (aws ec2 describe-vpc-endpoint-services --service-names <name>).
+    gwlb_endpoint_service_name = "com.amazonaws.vpce.us-east-1.vpce-svc-0123456789abcdef0"
+    # Pin attachment subnets by zone ID to the service's zones.
+    az_ids = ["use1-az1", "use1-az2"]
+    # Test instances share an AZ with a segment attachment and a GWLB endpoint.
+    workload_az_id = "use1-az1"
+    cidrs = {
+      prod       = "172.16.0.0/24"
+      dev        = "172.16.10.0/24"
+      inspection = "172.16.20.0/24"
+    }
+  }
+  "us-west-2" = {
+    asn                        = 64513
+    gwlb_endpoint_service_name = "com.amazonaws.vpce.us-west-2.vpce-svc-0123456789abcdef1"
+    cidrs = {
+      prod       = "172.16.1.0/24"
+      dev        = "172.16.11.0/24"
+      inspection = "172.16.21.0/24"
+    }
+  }
+}

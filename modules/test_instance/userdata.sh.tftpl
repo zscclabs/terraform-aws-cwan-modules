@@ -1,0 +1,40 @@
+#!/bin/bash
+# AWS EC2 User Data Script
+# Target OS: Amazon Linux 2023 (AL2023)
+# Installs and configures Zscaler Agent Manager
+# Rendered by templatefile(): $${...} renders as a literal shell expansion; the provision key comes from var.zscaler_provision_key.
+
+set -e
+exec > /var/log/zscaler-userdata.log 2>&1
+
+echo "[$(date)] Starting Zscaler Agent Manager setup on AL2023..."
+
+# ── 1. Install prerequisites ─────────────────────────────────────────────────
+# AL2023 minimal images do not bundle wget by default
+dnf install -y wget
+
+# ── 2. Download the EL7 RPM package ──────────────────────────────────────────
+echo "[$(date)] Downloading Zscaler Agent Manager EL7 RPM package..."
+RPM_PATH="/tmp/eyez-agentmanager-default-1.el7.x86_64.rpm"
+
+wget -q https://eyez-dist.private.zscaler.com/linux/eyez-agentmanager-default-1.el7.x86_64.rpm \
+     -O "$${RPM_PATH}"
+
+# ── 3. Configure the provision key ───────────────────────────────────────────
+echo "[$(date)] Writing provision key..."
+mkdir -p /opt/zscaler/zms/var
+
+cat << 'EOF' > /opt/zscaler/zms/var/provision_key
+${provision_key}
+EOF
+
+chmod 600 /opt/zscaler/zms/var/provision_key
+
+# ── 4. Install the package using disablerepo ─────────────────────────────────
+echo "[$(date)] Installing Zscaler Agent Manager RPM package..."
+yum install --disablerepo=\* -y "$${RPM_PATH}"
+
+# ── 5. Cleanup temporary artifact ────────────────────────────────────────────
+rm -f "$${RPM_PATH}"
+
+echo "[$(date)] Zscaler Agent Manager setup complete."
